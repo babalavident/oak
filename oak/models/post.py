@@ -90,7 +90,7 @@ class Post(dict):
         """
         year, month = name.split('-')[:2]
         newfilename = "%s.html" % name
-        return os.path.sep.join(['', year, month, newfilename])
+        return "/".join(['', year, month, newfilename])
 
     def _post_path(self, name, output_path):
         """Calculates the final path for a post given a name

@@ -29,6 +29,6 @@ class Tag(dict):
 
         :return: string
         """
-        return os.path.sep.join([tags_prefix, "%s.html" % (tagname,)])
+        return "/".join([tags_prefix, "%s.html" % (tagname,)])
 
 

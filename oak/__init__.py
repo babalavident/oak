@@ -32,7 +32,7 @@ class Oak(object):
     posts = []
     authors = {}
     tags = {}
-    blog_url = None
+    base_url = None # old blog_url
 
     def __init__(self, logger=None, settings=None):
         """Initializes the class
@@ -47,13 +47,17 @@ class Oak(object):
 
         if logger:
             self.logger = logger
+	
+	# What if there are no settings?
         if settings:
             self.settings = settings
 
         if self.settings.BLOG_PREFIX:
-            self.blog_url = "http://%s/%s" % (self.settings.BLOG_DOMAIN, self.settings.BLOG_PREFIX)
+            self.base_url = "http://%s/%s" % (self.settings.BLOG_DOMAIN, self.settings.BLOG_PREFIX)
         else:
-            self.blog_url = "http://%s" % (self.settings.BLOG_DOMAIN,)
+            self.base_url = "http://%s" % (self.settings.BLOG_DOMAIN,)
+
+	self.base_url.strip("/")
 
         self.logger.info("Starting up...")
         # set up the Jinja environment
@@ -68,20 +72,20 @@ class Oak(object):
         self.tpl_vars = {
             'blog': {
                 'title': self.settings.BLOG_TITLE,
-                'url': self.blog_url,
-                'id': "%s%s%s" % (self.blog_url, os.path.sep, "atom.xml"),
+                'url': self.base_url,
+                'id': "/".join([self.base_url, "atom.xml"]),
                 'last_updated': None, # Will be updated when reading posts.
                 'author': self.settings.AUTHOR,
                 'email': self.settings.EMAIL,
             },
             'license_text': self.settings.BLOG_LICENSE_TEXT,
             'links': {
-                'site': self.blog_url,
-                'taglist': os.path.sep.join([self.blog_url, self.settings.HTMLS['taglist']]),
-                'archive': os.path.sep.join([self.blog_url, self.settings.HTMLS['archive']]),
-                'authorlist': os.path.sep.join([self.blog_url, self.settings.HTMLS['authorlist']]),
-                'feed': os.path.sep.join([self.blog_url, self.settings.HTMLS['feed']]),
-                'css': os.path.sep.join([self.blog_url, self.settings.HTMLS['css']]),
+                'site': self.base_url,
+                'taglist': "/".join([self.base_url, self.settings.HTMLS['taglist']]),
+                'archive': "/".join([self.base_url, self.settings.HTMLS['archive']]),
+                'authorlist': "/".join([self.base_url, self.settings.HTMLS['authorlist']]),
+                'feed': "/".join([self.base_url, self.settings.HTMLS['feed']]),
+                'css': "/".join([self.base_url, self.settings.HTMLS['css']]),
             }
         }
 
@@ -105,7 +109,7 @@ class Oak(object):
 
         :return: string
         """
-        return os.path.sep.join([self.settings.AUTHORS_PREFIX, "%s.html" % (authorname,)])
+        return "/".join([self.settings.AUTHORS_PREFIX, "%s.html" % (authorname,)])
 
     def _index_path(self):
         """Calculates the path of the index page
@@ -119,21 +123,21 @@ class Oak(object):
 
         :returns: string
         """
-        return os.path.sep.join([self.settings.HTMLS['index']])
+        return "/".join([self.settings.HTMLS['index']])
 
     def _tag_index_url(self):
         """Calculates the URL for the tags index page
 
         :returns: string
         """
-        return os.path.sep.join([self.settings.HTMLS['taglist']])
+        return "/".join([self.settings.HTMLS['taglist']])
 
     def _author_index_url(self):
         """Calculates the URL for the authors index page
 
         :returns: string
         """
-        return os.path.sep.join([self.settings.HTMLS['authorlist']])
+        return "/".join([self.settings.HTMLS['authorlist']])
 
     def _tag_index_path(self):
         """Calculates the PATH for the tags index page
@@ -164,7 +168,7 @@ class Oak(object):
         return os.path.sep.join([self.settings.OUTPUT_PATH, self.settings.HTMLS['archive']])
 
     def _archive_url(self):
-        return os.path.sep.join([self.settings.HTMLS['archive']])
+        return "/".join([self.settings.HTMLS['archive']])
         
     def _write_file(self, filename, content):
         """Writes content in filename.
@@ -203,7 +207,7 @@ class Oak(object):
         self.logger.info("Using %s as source of content." % (self.settings.CONTENT_PATH,))
         for f in glob.glob("%s/*.%s" % (self.settings.CONTENT_PATH,self.settings.SRC_EXT)):
             self.logger.info("Processing %s..." % (f,))
-            post = Post(f, self.blog_url, self.settings, processor.MarkdownProcessor)
+            post = Post(f, self.base_url, self.settings, processor.MarkdownProcessor)
             self.posts.append(post)
             # cache the tags of the current post
             for t in post['metadata']['tags']:
