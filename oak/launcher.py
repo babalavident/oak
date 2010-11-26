@@ -67,7 +67,7 @@ class Launcher(object):
             self.logger.debug("LAYOUTS_PATH set to %s" % (self.settings.LAYOUTS_PATH,))
             self.logger.info("Settings loaded.")
             # instantiate Oak with the given settings
-            my_oak = oak.Oak(logger=self.logger, settings=self.settings)
+            my_oak = oak.Oak(settings=self.settings)
             self.logger.info("Oak initiated.")
             # call the generation process
             my_oak.generate()
