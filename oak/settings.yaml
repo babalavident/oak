@@ -1,0 +1,61 @@
+# YAML
+# Settings file for oak
+
+# Set the default author info for the blog
+author: &DEFAULT_AUTHOR
+ name: your name will be fine
+ email: your.email@example.com
+
+# Set the blog-related info
+blog:
+ title: your blog title
+ domain: example.com
+ license: The contents of this site are put on the <a href="http://creativecommons.org/publicdomain/zero/1.0/">public domain</a>
+ default_layout: default
+ generate_feed: True
+ generate_tags: True
+
+# Set the different url paths.
+# Path is relative to base_path unless it starts with /
+url_paths:
+ base_path: ''
+ archive: archive
+ tags: tag
+ authors: author
+
+# Server directory paths
+physical_paths:
+ content: content
+ static: static
+ output: site
+ layouts: layouts
+
+# The names of the templates
+templates:
+ '*': base.jinja             # for unknown page types
+ index: index.jinja          # the template will receive a list with the last N links to individual pages
+ archive: archive.jinja      # the template will receive a full list of individual pages
+ post: post.jinja            # the template will receive ...
+ taglist: tags.jinja'        # the template will receive a list of tags
+ authorlist: authors.jinja   # the template will receive a list of authors
+ tag: tag.jinja              # the template for one tag
+ author: author.jinja        # the template for one author
+ feed: atom.jinja            # the template for the atom feed
+
+pages:
+ index: index.html
+ taglist: tags.html
+ archive: archive.html
+ authorlist: authors.html
+ feed: atom.xml
+ css: static/css/main.css
+
+posts:
+ extension: md
+ pagination:
+  max: 10
+  sort_reverse: True
+ default_info:
+  title: Post title
+  author: *DEFAULT_AUTHOR
+  layout: post
