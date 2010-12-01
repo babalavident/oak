@@ -56,7 +56,7 @@ class Post(dict):
         except:
             raise PostError('Unable to open file. Hint: isn\'t it UTF-8 encoded?')
         
-        metadata = settings.POST_DEFAULTS
+        metadata = settings['posts']['default_info']
 
         # Set metadata to the app defaults
         self['metadata'] = metadata.copy()
@@ -76,7 +76,7 @@ class Post(dict):
         name, extension = os.path.splitext(filename)
 
         # TODO add sanity check on source filename (count of - ...)
-        self['output_path'] = self._post_path(name, settings.OUTPUT_PATH) 
+        self['output_path'] = self._post_path(name, settings['physical_paths']['output']) 
         self['url'] = "%s%s" % (url, self._post_url(name))
         self['id'] = Atom.gen_id(self)
 

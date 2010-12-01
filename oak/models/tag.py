@@ -5,9 +5,9 @@ import os
 class Tag(dict):
     def __init__(self, tag, settings, posts=[]):
         self['tag'] = tag
-        self['url'] = self._tag_url(settings.TAGS_PREFIX, tag)
+        self['url'] = self._tag_url(settings['url_paths']['tags'], tag)
         self['posts'] = posts
-        self['path'] = self._tag_path(settings.OUTPUT_PATH, settings.TAGS_PREFIX, tag) 
+        self['path'] = self._tag_path(settings['physical_paths']['output'], settings['url_paths']['tags'], tag) 
 
     def _tag_path(self, output_path, tags_prefix, tagname=None):
         """Calculates the final path for a tag page given a tag name

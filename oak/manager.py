@@ -41,7 +41,7 @@ class Manager(object):
 
         # obtain where the oak module is located and copy settings.py and manage.py
         oak_path = os.path.dirname(oak.__file__)
-        shutil.copy2(os.path.sep.join([oak_path, 'settings.py']), path)
+        shutil.copy2(os.path.sep.join([oak_path, 'settings.yaml']), path)
         shutil.copy2(os.path.sep.join([oak_path, 'scripts', 'manage.py']), path)
         print("""
         You may now want to edit your %s/settings.py file and initialize the git

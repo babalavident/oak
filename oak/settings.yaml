@@ -10,7 +10,7 @@ author: &DEFAULT_AUTHOR
 blog:
  title: your blog title
  domain: example.com
- license: The contents of this site are put on the <a href="http://creativecommons.org/publicdomain/zero/1.0/">public domain</a>
+ license_text: The contents of this site are put on the <a href="http://creativecommons.org/publicdomain/zero/1.0/">public domain</a>
  default_layout: default
  generate_feed: True
  generate_tags: True
@@ -36,7 +36,7 @@ templates:
  index: index.jinja          # the template will receive a list with the last N links to individual pages
  archive: archive.jinja      # the template will receive a full list of individual pages
  post: post.jinja            # the template will receive ...
- taglist: tags.jinja'        # the template will receive a list of tags
+ taglist: tags.jinja         # the template will receive a list of tags
  authorlist: authors.jinja   # the template will receive a list of authors
  tag: tag.jinja              # the template for one tag
  author: author.jinja        # the template for one author
@@ -53,7 +53,7 @@ pages:
 posts:
  extension: md
  pagination:
-  max: 10
+  max_posts: 10
   sort_reverse: True
  default_info:
   title: Post title
