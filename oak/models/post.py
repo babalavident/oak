@@ -104,4 +104,70 @@ class Post(dict):
         newfilename = "%s.html" % name
         return os.path.sep.join([output_path, year, month, newfilename])
 
-       
+    @staticmethod
+    def _write_file(filename, content):
+        """Writes content in filename.
+
+        :param filename: the output file name
+        :type filename: string
+
+        :param content: the content to write
+        :type content: string
+
+        """
+        if filename.count(os.path.sep): # if it's a path, check for directories
+            if not os.path.exists(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename))
+        outfile = codecs.open(filename, mode='w', encoding='utf-8')
+        outfile.write(content)
+        outfile.close()
+
+    @classmethod
+    def pick_up_acorns(cls, acorn_dir, acorn_extension, base_url, settings, post_template, tpl_vars):
+        import glob
+        import logging
+        logger = logging.getLogger('oak')
+
+        from oak.processors import processor
+        from oak.models.tag import Tag
+        from oak.models.author import Author
+
+        post_list = []
+        tags = {}
+        authors = {}
+        acorn_pattern = os.path.sep.join([acorn_dir, '*.' + acorn_extension])
+        for acorn in glob.glob(acorn_pattern):
+
+            logger.info("Processing %s..." % (acorn,))
+            post = cls(acorn, base_url, settings, processor.MarkdownProcessor)
+            post_list.append(post)
+
+            # cache the tags of the current post
+            for tag in post['metadata']['tags']:
+                if tag not in tags.keys():
+                    tags[tag] = Tag(tag=tag, settings=settings, posts=[post])
+                else:
+                    tags[tag]['posts'].append(post)
+
+            # cache the author of the current post
+            author = post['metadata']['author']
+            if author not in authors.keys():
+                authors[author] = Author(author=author,
+                                         url="/".join([settings['url_paths']['authors'], "%s.html" % (author,)]),
+                                         posts=[post])
+            else:
+                authors[author]['posts'].append(post)
+            
+            # make sure we have the final path created
+            if not os.path.exists(os.path.dirname(post['output_path'])) or not os.path.isdir(os.path.dirname(post['output_path'])):
+                logger.debug("Output directory %s not found, creating" % (os.path.dirname(post['output_path']),))
+                os.makedirs(os.path.dirname(post['output_path']))
+
+            tpl_vars.update({'post': post})
+            logger.debug("tpl_vars: %s" % (tpl_vars,))
+            output = post_template.render(tpl_vars)
+            logger.info("Generating output file in %s" % (post['output_path'],))
+            cls._write_file(post['output_path'], output)
+            tpl_vars.pop('post') # remove the aded key
+
+        return post_list, tags, authors

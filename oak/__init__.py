@@ -87,14 +87,14 @@ class Oak(object):
             }
         }
 
-    def _get_complete_url(self, path):
+    def _get_complete_url(self, path, filename=""):
         if path.startswith('/'):
-            return path
+            return "/".join([path, filename])
         else:
-            return "/".join([self.base_url, path])
+            return "/".join([self.base_url, path, filename])
 
-    def _get_complete_path(self, path):
-        return  os.path.sep.join([self.settings['physical_paths']['output'], path])
+    def _get_complete_path(self, path, filename=""):
+        return  os.path.sep.join([self.settings['physical_paths']['output'], path, filename])
 
     def _author_path(self, authorname=None):
         """Calculates the final path for a author page given a author name
@@ -247,6 +247,13 @@ class Oak(object):
             logger.info("Generating output file in %s" % (post['output_path'],))
             self._write_file(post['output_path'], output)
             self.tpl_vars.pop('post') # remove the aded key
+
+        Post.pick_up_acorns(self.settings['physical_paths']['content'],
+                            self.settings['posts']['extension'],
+                            self.base_url,
+                            self.settings,
+                            self.jenv.get_template(self.settings['templates']['post']),
+                            self.tpl_vars)
 
     def _do_tag(self, tag):
         """Create the page for the tag 'tag'
